@@ -22,17 +22,18 @@ struct global_shape{
 		struct Circle{
 			float center_x, center_y;
 			float radius;
-            float (*f)(float);
+            		float (*f)(float);
 		}c; 
 		struct Triangle{
 			float x1, x2, x3;
 			float y1, y2, y3;
-            float (*f)(float, float, float);
+           		 float (*f)(float, float, float);
 		}t;
 		struct Square{
 			float x1, x2, x3, x4;
 			float y1, y2, y3, y4;
 		}s;
+		// Do not declare the function pointer here;
 	}u;
 
 }v[100];
