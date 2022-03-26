@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+// Not yet done ...
 void readelf(FILE* fp,char par[])
 {
     int bit_op=0;
