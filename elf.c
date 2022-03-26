@@ -1,15 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// Not yet done ...
+#include <stdint.h>
+
+struct Proghdr {
+        uint64_t p_type;
+        uint64_t p_offset;
+        uint64_t p_va;
+        uint64_t p_pa;
+        uint64_t p_filesz;
+        uint64_t p_memsz;
+        uint64_t p_flags; 
+        uint64_t p_align;
+};
+
 void readelf(FILE* fp,char par[])
 {
+    u_int16_t phoff;
     int bit_op=0;
     char magic[4];
     char arch[2];
     int bit_64=0;
     fread(&magic,4,1,fp);
-    if(strchr(par,'h'))
+    if(strchr(par,'h') || strchr(par,'a'))
     {
         if((magic[0]==0x7f) && (magic[1]==0x45) && (magic[2]==0x4c) && (magic[3]==0x46))
         {
@@ -357,10 +370,9 @@ void readelf(FILE* fp,char par[])
         {
             bit_op=4;
         }
-        u_int16_t memadr;
+        uint16_t memadr;
         fread(&memadr,bit_op,1,fp);
         printf("Entry point adress :  0x%x \n",memadr);
-        u_int16_t phoff;
         fread(&phoff,bit_op,1,fp);
         printf("Start of program header  : %d ( bytes in file ) \n",phoff);
         u_int32_t eshoff;
@@ -376,15 +388,34 @@ void readelf(FILE* fp,char par[])
         fread(&p_h,2,1,fp);
         printf("Size of program headers is : %d \n",p_h);
         u_int8_t all;
-        fread(&all,2,1,fp);
-        printf("Number of program headers is : %d \n",all);
+        u_int8_t e_phnum;
+        fread(&e_phnum,2,1,fp);
+        printf("Number of program headers is : %d \n",e_phnum);
         fread(&all,2,1,fp);
         printf("Size of section headers is : %d\n",all);
         fread(&all,2,1,fp);
         printf("Number of section headers is : %d\n",all);
         fread(&all,2,1,fp);
         printf("Section header string table index : %d \n",all);
+  
+
+        
     }
+    if(strchr(par,'l') || strchr(par,'a'))
+        {
+            printf("Type \t Offset \t Virtaddr \t Phyaddr \n \t Filesiz \t Memsiz \t Flags \t Align \n");
+            fseek(fp,phoff,SEEK_SET);
+            printf("\t \t Program header \t\n");
+            for(int i=0;i<11;i++)
+             {
+                    u_int32_t p_type;
+                    struct Proghdr ph;
+                    fread(&ph,1,sizeof(struct Proghdr),fp);
+                    printf("%x \t %p \t %p \t %p \t \n \t %p \t %p \t %x \t %x \n",ph.p_type,ph.p_offset,ph.p_va,ph.p_pa,ph.p_filesz,ph.p_memsz,ph.p_flags,ph.p_align);
+            }
+                
+
+        }
 
 
 }
