@@ -16,7 +16,8 @@ struct Proghdr {
 
 void readelf(FILE* fp,char par[])
 {
-    u_int16_t phoff;
+    uint16_t phoff;
+    uint8_t e_phnum;
     int bit_op=0;
     char magic[4];
     char arch[2];
@@ -122,35 +123,34 @@ void readelf(FILE* fp,char par[])
         }
         char junk[8];
         fread(&junk,8,1,fp);
-        char exec[2];
+        uint16_t exec;
         fread(&exec,2,1,fp);
-        if(strcmp(exec,"0x02"))
+        switch(exec)
         {
-            printf("Executable\n");
-        }
-        else if(strcmp(exec,"0x00"))
-        {
-            printf("Unkown type\n");
-        }
-        else if(strcmp(exec, "0x01"))
-        {
-            printf("Relocatable file\n");
-        }
-        else if(strcmp(exec,"0x03"))
-        {
-            printf("Shared object \n");
-        }
-        else if(strcmp(exec,"0x04"))
-        {
-            printf("Core file \n");
-        }
-        else if(strcmp(exec,"0xFE00") || strcmp(exec,"0xFEFF"))
-        {
-            printf("Reserved inclusive range. Operating system specific.\n");
-        }
-        else if(strcmp(exec,"0xFF00") || strcmp(exec, "0xFFFF"))
-        {
-            printf("Reserved inclusive range. Processor specific.\n");
+            case 1:
+                printf("Executable\n");
+                break;
+            case 2:
+
+                break;
+            case 3:
+                printf("Shared object \n");
+                break;
+            case 4:
+                
+                break;
+            case 0xFE00:
+
+                break;
+            case 0xFEFF:
+
+                break;
+            case 0xFF00:
+
+                break;
+            case 0xFFFF:
+
+                break;
         }
         char instrset[2];
         fread(&instrset,2,1,fp);
@@ -375,20 +375,19 @@ void readelf(FILE* fp,char par[])
         printf("Entry point adress :  0x%x \n",memadr);
         fread(&phoff,bit_op,1,fp);
         printf("Start of program header  : %d ( bytes in file ) \n",phoff);
-        u_int32_t eshoff;
+        uint32_t eshoff;
         fread(&eshoff,4,1,fp);
         printf("Start of section headers %d (bytes in file )\n",eshoff);
-        u_int32_t flags;
+        uint32_t flags;
         fread(&flags,bit_op,1,fp);
         printf("Flag : \t 0x%x \n",flags);
-        u_int8_t size_h;
-        u_int8_t p_h;
+        uint8_t size_h;
+        uint8_t p_h;
         fread(&size_h,2,1,fp);
         printf("Size of header file is : %d\n",size_h);
         fread(&p_h,2,1,fp);
         printf("Size of program headers is : %d \n",p_h);
-        u_int8_t all;
-        u_int8_t e_phnum;
+        uint8_t all;
         fread(&e_phnum,2,1,fp);
         printf("Number of program headers is : %d \n",e_phnum);
         fread(&all,2,1,fp);
@@ -408,10 +407,10 @@ void readelf(FILE* fp,char par[])
             printf("\t \t Program header \t\n");
             for(int i=0;i<11;i++)
              {
-                    u_int32_t p_type;
+                    uint32_t p_type;
                     struct Proghdr ph;
                     fread(&ph,1,sizeof(struct Proghdr),fp);
-                    printf("%x \t %p \t %p \t %p \t \n \t %p \t %p \t %x \t %x \n",ph.p_type,ph.p_offset,ph.p_va,ph.p_pa,ph.p_filesz,ph.p_memsz,ph.p_flags,ph.p_align);
+                    printf("%d \t %p \t %p \t %p \t \n \t %p \t %p \t %x \t %x \n",ph.p_type,ph.p_offset,ph.p_va,ph.p_pa,ph.p_filesz,ph.p_memsz,ph.p_flags,ph.p_align);
             }
                 
 
